@@ -1,42 +1,33 @@
 const express = require('express')
 const { google } = require('googleapis');
-
+const {
+    getSpreadSheet,
+    getSpreadSheetValues
+} = require('./googleSheetsService.js');
 
 const app = express(express.json())
-const PORT = 3000;
+const PORT = 4000;
 
 const spreadsheetId = "";
+const sheetName = "";
 
-const sheets = google.sheets('v4');
+
+// function main() {
+//     testGetSpreadSheet();
+//     testGetSpreadSheetValues();
+// }
 
 app.get('/', async (req, res) => {
-    try {
-        const authCient = new authorize();
-        const sheets = google.sheets({
-            version: 'v4',
-            auth: client,
-        })
-        const response = await sheets.spreadsheets.values.get({
-            spreadsheetId: spreadsheetId,
-            range: 'test',
-        });
-        res.send(response.data);
-    } catch (e) {
-        console.log(e);
-    }
+    const response = await getSpreadSheetValues({
+        spreadsheetId,
+        sheetName,
+        keyFile: 'key.json',
+        scopes: ['https://www.googleapis.com/auth/spreadsheets']
+    });
+    res.send(response?.data?.values);
 });
 
 app.listen(PORT, () => {
     console.log(`Express with Typescript! http://localhost:${PORT}`);
 });
 
-
-
-const authorize = async () => {
-    const auth = new google.auth.GoogleAuth({
-        keyFile: 'key.json',
-        scopes: 'https://www.googleapis.com/auth/spreadsheets',
-    });
-
-    return await auth.getClient();
-}
